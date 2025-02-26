@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from 'react';
-import { reviewService, Review } from '../services/reviewService';
+import { reviewService } from '../services/reviewService';  // No need to import 'Review' here
+import { Review } from '../models/review';  // Corrected import path for 'Review'
 
 export const useReviews = (tripId: number) => {
   const [reviews, setReviews] = useState<Review[]>([]);

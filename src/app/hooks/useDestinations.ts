@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { destinationService, Destination } from '../services/destinationService';
+import { destinationService } from '../services/destinationService';
+import { Destination } from '../models/destination';  // Corrected import path
 
 export const useDestinations = () => {
   const [destinations, setDestinations] = useState<Destination[]>([]);
