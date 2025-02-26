@@ -1,14 +1,36 @@
-import api from './api';  // Changed from axios to our custom instance
-import { Trip } from '../models/trip';  // Fixed typo in import path
+import api from './api';
+import { handleServiceError } from './api';  // Make sure to import handleServiceError
+import type { Trip, TripCreate } from '../models/trip';
 
+// Service to interact with trips API
 export const tripService = {
-  getTrips: async (): Promise<Trip[]> => {
-    const response = await api.get('/api/trips/');
-    return response.data;
+  getAllTrips: async (): Promise<Trip[]> => {
+    try {
+      const response = await api.get('/api/trips/');
+      return response.data;
+    } catch (error) {
+      handleServiceError(error, 'Failed to fetch trips');  // Use handleServiceError
+      throw error;  // Ensure the error is thrown for further handling in the hook
+    }
   },
-  createTrip: async (tripData: Omit<Trip, 'id'>) => {
-    const response = await api.post('/api/trips/', tripData);
-    return response.data;
+
+  getTripDetails: async (id: number): Promise<Trip> => {
+    try {
+      const response = await api.get(`/api/trips/${id}/`);
+      return response.data;
+    } catch (error) {
+      handleServiceError(error, 'Failed to fetch trip details');
+      throw error;  // Ensure the error is thrown for further handling
+    }
   },
-  // Add other trip-related API calls as needed
+
+  createTrip: async (tripData: TripCreate): Promise<Trip> => {
+    try {
+      const response = await api.post('/api/trips/', tripData);
+      return response.data;
+    } catch (error) {
+      handleServiceError(error, 'Failed to create trip');
+      throw error;  // Ensure the error is thrown for further handling
+    }
+  }
 };

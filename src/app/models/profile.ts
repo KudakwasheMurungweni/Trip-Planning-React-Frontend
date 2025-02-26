@@ -1,21 +1,17 @@
-// Base Django User model fields
-export interface DjangoUser {
+export interface Profile {
     id: number;
     username: string;
     email: string;
     first_name: string;
     last_name: string;
+    phone_number?: string;
+    address?: string;
+    // Add any other fields based on your profile data
   }
   
-  // Profile model matching Django
-  export interface Profile {
-    id: number;
-    user: DjangoUser;
+  // `ProfileUpdate` allows partial updates of a `Profile`, excluding `id` and `user`
+  export interface ProfileUpdate extends Partial<Omit<Profile, 'id'>> {
     phone_number?: string;
     address?: string;
   }
   
-  // Combined type for authenticated user
-  export interface AuthUser extends DjangoUser {
-    profile?: Profile;
-  }
