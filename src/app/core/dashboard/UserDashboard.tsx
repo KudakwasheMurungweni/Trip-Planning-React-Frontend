@@ -1,6 +1,7 @@
-import { BookingManager } from '../../features/bookings/BookingManager';
-import { TripCreationForm } from '../../features/trips/TripCreationForm';
-import { useAuth } from '../../context/AuthContext'; // Fixed path
+import "./UserDashboard.css";
+import { BookingManager } from "../../features/bookings/BookingManager";
+import { TripCreationForm } from "../../features/trips/TripCreationForm";
+import { useAuth } from "../../context/AuthContext";
 
 export const UserDashboard = () => {
   const { user } = useAuth();
