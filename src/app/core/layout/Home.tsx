@@ -1,5 +1,3 @@
-// Home.tsx
-
 import React from 'react';
 import './Home.css';
 
@@ -14,6 +12,7 @@ export const Home = () => {
           <div className="cta-container">
             <a href="/login" className="cta-button primary">Plan Your Journey</a>
             <a href="/destinations" className="cta-button secondary">Discover Destinations</a>
+            <a href="/register" className="cta-button tertiary">Sign Up</a> {/* Added Register link */}
           </div>
         </div>
       </section>

@@ -16,7 +16,7 @@ export const profileService = {
 
   updateProfile: async (profileData: ProfileUpdate): Promise<Profile> => {
     try {
-      const response = await api.put('/api/profile/', profileData);
+      const response = await api.put('/api/users/', profileData);
       if (response.status !== 200) throw new Error('Failed to update profile');
       return response.data;
     } catch (error) {

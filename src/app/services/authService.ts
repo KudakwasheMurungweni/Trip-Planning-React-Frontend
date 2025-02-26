@@ -1,12 +1,11 @@
 import axios from 'axios';
-
-import api from './api';
+import api from './api'; // Import your axios instance from api.ts
 import type { AuthUser } from '../models/profile';
 
 export const authService = {
   login: async (credentials: { username: string; password: string }): Promise<AuthUser> => {
     try {
-      const response = await api.post<{ user: AuthUser; token: string }>('/api/auth/login/', credentials);
+      const response = await api.post<{ user: AuthUser; token: string }>('/api/token/', credentials); // Adjusted to Django token endpoint
       // Store token in localStorage
       localStorage.setItem('authToken', response.data.token);
       return response.data.user;
@@ -26,7 +25,7 @@ export const authService = {
     password: string 
   }): Promise<AuthUser> => {
     try {
-      const response = await api.post<{ user: AuthUser }>('/api/auth/register/', userData);
+      const response = await api.post<{ user: AuthUser }>('/api/users/', userData); // Adjusted to Django user creation route
       return response.data.user;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -41,8 +40,9 @@ export const authService = {
 
   logout: async (): Promise<void> => {
     try {
-      await api.post('/api/auth/logout/');
-      // Clear authentication data
+      // Clear the token in the backend if needed
+      await api.post('/api/auth/logout/'); 
+      // Remove the token from localStorage to ensure it won't be sent in future requests
       localStorage.removeItem('authToken');
     } catch (error) {
       if (axios.isAxiosError(error)) {
