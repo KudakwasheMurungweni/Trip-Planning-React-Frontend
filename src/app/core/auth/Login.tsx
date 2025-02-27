@@ -4,15 +4,17 @@ import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
 
 export const Login = () => {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
-  const [errors, setErrors] = useState<{ username?: string; password?: string; form?: string }>({});
+  const [credentials, setCredentials] = useState({ usernameOrEmail: "", password: "" });
+  const [errors, setErrors] = useState<{ usernameOrEmail?: string; password?: string; form?: string }>({});
   const { login } = useAuth();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
-    if (!credentials.username) newErrors.username = "Username is required";
+
+    if (!credentials.usernameOrEmail) newErrors.usernameOrEmail = "Username or Email is required";
     if (!credentials.password) newErrors.password = "Password is required";
-    if (credentials.password?.length < 6) newErrors.password = "Password must be at least 6 characters";
+    if (credentials.password.length < 6) newErrors.password = "Password must be at least 6 characters";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -22,12 +24,18 @@ export const Login = () => {
     if (!validateForm()) return;
 
     try {
-      const user = await authService.login(credentials);
+      setErrors({}); // Clear previous errors
+
+      await authService.login({
+        username: credentials.usernameOrEmail, // API expects "username", but supports email too
+        password: credentials.password
+      });
+
+      const user = await authService.getProfile(); // Fetch user profile after login
       login(user);
     } catch (error) {
       setErrors({
-        ...errors,
-        form: error instanceof Error ? error.message : "Login failed",
+        form: error instanceof Error ? error.message : "Login failed"
       });
     }
   };
@@ -35,14 +43,14 @@ export const Login = () => {
   return (
     <form className="form" onSubmit={handleSubmit}>
       <div className="input-group">
-        <label className="label">Username</label>
+        <label className="label">Username or Email</label>
         <input
           type="text"
           className="input"
-          value={credentials.username}
-          onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+          value={credentials.usernameOrEmail}
+          onChange={(e) => setCredentials({ ...credentials, usernameOrEmail: e.target.value })}
         />
-        {errors.username && <span className="error">{errors.username}</span>}
+        {errors.usernameOrEmail && <span className="error">{errors.usernameOrEmail}</span>}
       </div>
 
       <div className="input-group">

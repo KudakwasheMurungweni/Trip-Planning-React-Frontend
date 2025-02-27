@@ -6,25 +6,33 @@ import { authService } from "../../services/authService";
 export const Register = () => {
   const [formData, setFormData] = useState({
     username: "",
+    email: "",
     password: "",
     confirmPassword: ""
   });
+
   const [errors, setErrors] = useState<{
     username?: string;
+    email?: string;
     password?: string;
     confirmPassword?: string;
     form?: string;
   }>({});
+
   const { login } = useAuth();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
+
     if (!formData.username) newErrors.username = "Username is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Invalid email format";
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -34,14 +42,18 @@ export const Register = () => {
     if (!validateForm()) return;
 
     try {
-      const user = await authService.register({
+      setErrors({}); // Clear previous errors
+
+      await authService.register({
         username: formData.username,
+        email: formData.email,
         password: formData.password
       });
+
+      const user = await authService.getProfile(); // Fetch user profile after registration
       login(user);
     } catch (error) {
       setErrors({
-        ...errors,
         form: error instanceof Error ? error.message : "Registration failed"
       });
     }
@@ -58,6 +70,17 @@ export const Register = () => {
           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
         />
         {errors.username && <span className="error">{errors.username}</span>}
+      </div>
+
+      <div className="input-group">
+        <label className="label">Email</label>
+        <input
+          type="email"
+          className="input"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+        {errors.email && <span className="error">{errors.email}</span>}
       </div>
 
       <div className="input-group">
