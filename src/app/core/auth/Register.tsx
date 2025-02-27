@@ -1,5 +1,6 @@
 import "./Register.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
 
@@ -20,6 +21,7 @@ export const Register = () => {
   }>({});
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -44,14 +46,26 @@ export const Register = () => {
     try {
       setErrors({}); // Clear previous errors
 
+      // Step 1: Register the user
       await authService.register({
         username: formData.username,
         email: formData.email,
         password: formData.password
       });
 
-      const user = await authService.getProfile(); // Fetch user profile after registration
-      login(user);
+      // Step 2: Login to get JWT token
+      await authService.login({
+        username: formData.username,
+        password: formData.password
+      });
+
+      // Step 3: Fetch user profile with the obtained token
+      const userData = await authService.getProfile();
+      
+      // Step 4: Set user in context and redirect
+      login(userData);
+      navigate('/dashboard');
+      
     } catch (error) {
       setErrors({
         form: error instanceof Error ? error.message : "Registration failed"
