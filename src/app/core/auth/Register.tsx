@@ -63,7 +63,7 @@ export const Register = () => {
       const userData = await authService.getProfile();
       
       // Step 4: Set user in context and redirect
-      login(userData);
+      login(userData, userData.token);
       navigate('/dashboard');
       
     } catch (error) {

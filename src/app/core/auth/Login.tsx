@@ -2,18 +2,32 @@ import "./Login.css";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
-  const [credentials, setCredentials] = useState({ usernameOrEmail: "", password: "" });
-  const [errors, setErrors] = useState<{ usernameOrEmail?: string; password?: string; form?: string }>({});
+  const [credentials, setCredentials] = useState({ 
+    usernameOrEmail: "", 
+    password: "" 
+  });
+  const [errors, setErrors] = useState<{ 
+    usernameOrEmail?: string; 
+    password?: string; 
+    form?: string 
+  }>({});
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
 
-    if (!credentials.usernameOrEmail) newErrors.usernameOrEmail = "Username or Email is required";
-    if (!credentials.password) newErrors.password = "Password is required";
-    if (credentials.password.length < 6) newErrors.password = "Password must be at least 6 characters";
+    if (!credentials.usernameOrEmail) {
+      newErrors.usernameOrEmail = "Username or Email is required";
+    }
+    if (!credentials.password) {
+      newErrors.password = "Password is required";
+    } else if (credentials.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -24,15 +38,21 @@ export const Login = () => {
     if (!validateForm()) return;
 
     try {
-      setErrors({}); // Clear previous errors
+      setErrors({});
 
-      await authService.login({
-        username: credentials.usernameOrEmail, // API expects "username", but supports email too
+      // Get token from login response
+      const token = await authService.login({
+        username: credentials.usernameOrEmail,
         password: credentials.password
       });
 
-      const user = await authService.getProfile(); // Fetch user profile after login
-      login(user);
+      // Fetch user profile after successful login
+      const user = await authService.getProfile();
+      
+      // Update auth context and redirect
+      login(user, token);
+      navigate('/dashboard');
+
     } catch (error) {
       setErrors({
         form: error instanceof Error ? error.message : "Login failed"
@@ -48,9 +68,13 @@ export const Login = () => {
           type="text"
           className="input"
           value={credentials.usernameOrEmail}
-          onChange={(e) => setCredentials({ ...credentials, usernameOrEmail: e.target.value })}
+          onChange={(e) => setCredentials({ 
+            ...credentials, 
+            usernameOrEmail: e.target.value 
+          })}
         />
-        {errors.usernameOrEmail && <span className="error">{errors.usernameOrEmail}</span>}
+        {errors.usernameOrEmail && 
+          <span className="error">{errors.usernameOrEmail}</span>}
       </div>
 
       <div className="input-group">
@@ -59,9 +83,13 @@ export const Login = () => {
           type="password"
           className="input"
           value={credentials.password}
-          onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+          onChange={(e) => setCredentials({ 
+            ...credentials, 
+            password: e.target.value 
+          })}
         />
-        {errors.password && <span className="error">{errors.password}</span>}
+        {errors.password && 
+          <span className="error">{errors.password}</span>}
       </div>
 
       {errors.form && <div className="error">{errors.form}</div>}
