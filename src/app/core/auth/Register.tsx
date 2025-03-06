@@ -42,28 +42,23 @@ export const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-
+  
     try {
-      setErrors({}); // Clear previous errors
-
-      // Step 1: Register the user
+      setErrors({});
+  
       await authService.register({
         username: formData.username,
         email: formData.email,
         password: formData.password
       });
-
-      // Step 2: Login to get JWT token
-      await authService.login({
+  
+      // Get user and token from login response
+      const { user, token } = await authService.login({
         username: formData.username,
         password: formData.password
       });
-
-      // Step 3: Fetch user profile with the obtained token
-      const userData = await authService.getProfile();
-      
-      // Step 4: Set user in context and redirect
-      login(userData, userData.token);
+  
+      login(user, token); // Save user info and token in context
       navigate('/dashboard');
       
     } catch (error) {

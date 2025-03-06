@@ -12,7 +12,7 @@ export const Login = () => {
   const [errors, setErrors] = useState<{ 
     usernameOrEmail?: string; 
     password?: string; 
-    form?: string 
+    form?: string; 
   }>({});
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -40,15 +40,12 @@ export const Login = () => {
     try {
       setErrors({});
 
-      // Get token from login response
-      const token = await authService.login({
+      // Get user and token from login response (destructure the returned object)
+      const { user, token } = await authService.login({
         username: credentials.usernameOrEmail,
         password: credentials.password
       });
 
-      // Fetch user profile after successful login
-      const user = await authService.getProfile();
-      
       // Update auth context and redirect
       login(user, token);
       navigate('/dashboard');
