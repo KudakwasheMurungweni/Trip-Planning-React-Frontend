@@ -1,34 +1,45 @@
-import api from './api'; // Use axios instance from api.ts
-import { handleServiceError } from './api'; // Ensure correct error handling
-import type { Booking, BookingCreate } from '../models/booking';
-
+import api from './api';
+import { handleServiceError } from './api';
+import  { Booking, BookingCreate } from '../models/booking';
+import { Trip } from '../models/trip'
 export const bookingService = {
+  getUserBookings: async (): Promise<Booking[]> => {
+    try {
+      const response = await api.get('/bookings');
+      return response.data;
+    } catch (err) {
+      handleServiceError(err);
+      throw err;
+    }
+  },
+
+  getAvailableTrips: async (): Promise<Trip[]> => {
+    try {
+      const response = await api.get('/trips');
+      return response.data;
+    } catch (err) {
+      handleServiceError(err);
+      throw err;
+    }
+  },
+
   getAllBookings: async (): Promise<Booking[]> => {
     try {
-      const response = await api.get('/api/bookings/');
-      return response.data; // Axios automatically parses JSON
-    } catch (error) {
-      handleServiceError(error, 'Failed to fetch bookings');
-      throw error;  // Re-throwing the error so it can be handled by the calling function
+      const response = await api.get('/bookings/all');
+      return response.data;
+    } catch (err) {
+      handleServiceError(err);
+      throw err;
     }
   },
 
   createBooking: async (bookingData: BookingCreate): Promise<Booking> => {
     try {
-      const response = await api.post('/api/bookings/', bookingData);
+      const response = await api.post('/bookings', bookingData);
       return response.data;
-    } catch (error) {
-      handleServiceError(error, 'Failed to create booking');
-      throw error;  // Re-throwing the error for proper error handling
-    }
-  },
-
-  cancelBooking: async (bookingId: number): Promise<void> => {
-    try {
-      await api.delete(`/api/bookings/${bookingId}/`);
-    } catch (error) {
-      handleServiceError(error, 'Failed to cancel booking');
-      throw error;  // Re-throwing the error to propagate it
+    } catch (err) {
+      handleServiceError(err);
+      throw err;
     }
   }
 };

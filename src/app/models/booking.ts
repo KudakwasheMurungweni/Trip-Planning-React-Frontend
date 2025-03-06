@@ -1,13 +1,14 @@
-import { Profile } from '../models/profile';
-import { Trip } from '../models/trip';
+import { Profile } from './profile';  // Ensure the correct path if needed
+import { Trip } from './trip';         // Correct import path for Trip model
 
 export interface Booking {
   id: number;
   user: Profile;
-  trip: Trip;
+  trip: Trip | number | null;  // Allow null as well
   booking_type: string;
   details: string;
 }
+
 
 export interface BookingCreate {
   userId: number;
@@ -15,3 +16,5 @@ export interface BookingCreate {
   booking_type: string;
   details: string;
 }
+
+

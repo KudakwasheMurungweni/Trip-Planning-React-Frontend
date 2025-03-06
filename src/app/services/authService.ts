@@ -45,16 +45,34 @@ export const authService = {
   getProfile: async (): Promise<AuthUser> => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('User not authenticated.');
-
+      if (!token) {
+        console.error('No auth token found');
+        throw new Error('User not authenticated.');
+      }
+  
+      console.log('Attempting to fetch profile with token:', token.substring(0, 10) + '...'); // Log partial token for debugging
+  
       const response = await api.get<AuthUser>('/api/users/profile/', {
-        headers: { Authorization: `Bearer ${token}` }, // ✅ Send token in request
+        headers: { Authorization: `Bearer ${token}` },
       });
-
+  
+      console.log('Profile response:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Profile fetch error:', error);
+      
       if (axios.isAxiosError(error)) {
-        throw new Error('Failed to fetch user profile.');
+        console.error('Axios error details:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          headers: error.response?.headers
+        });
+        
+        throw new Error(
+          error.response?.data?.detail || 
+          error.response?.data?.message || 
+          'Failed to fetch user profile.'
+        );
       }
       throw new Error('Profile fetch failed due to an unexpected error.');
     }

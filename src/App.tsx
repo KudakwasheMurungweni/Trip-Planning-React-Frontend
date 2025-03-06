@@ -4,10 +4,14 @@ import { ProtectedRoute } from './app/components/ProtectedRoute';
 import { Home } from './app/core/layout/Home';
 import { Login } from './app/core/auth/Login';
 import { Register } from './app/core/auth/Register';
-import { UserDashboard } from './app/core/dashboard/UserDashboard';
 import { DestinationList } from './app/features/destinations/DestinationList';
-import { TripCreationForm } from './app/features/trips/TripCreationForm';
+import { TripList } from './app/features/trips/TripList';
 import { BookingManager } from './app/features/bookings/BookingManager';
+// Correct way to import default export
+import BookingForm from './app/features/bookings/BookingForm';
+
+import { ReviewSubmission } from './app/features/reviews/ReviewSubmission';
+import { ReviewList } from './app/features/reviews/ReviewList';
 import { Navbar } from './app/core/layout/Navbar';
 import { Footer } from './app/core/layout/Footer';
 import './App.css';
@@ -30,26 +34,42 @@ function App() {
 
               {/* Protected routes */}
               <Route
-                path="/dashboard"
+                path="/trips"
                 element={
                   <ProtectedRoute>
-                    <UserDashboard />
+                    <TripList />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="/create-trip"
-                element={
-                  <ProtectedRoute>
-                    <TripCreationForm />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/my-bookings"
+                path="/bookings"
                 element={
                   <ProtectedRoute>
                     <BookingManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/book-trip/:tripId"
+                element={
+                  <ProtectedRoute>
+                    <BookingForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reviews"
+                element={
+                  <ProtectedRoute>
+                    <ReviewList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/review-trip/:tripId"
+                element={
+                  <ProtectedRoute>
+                    <ReviewSubmission tripId={0} />
                   </ProtectedRoute>
                 }
               />

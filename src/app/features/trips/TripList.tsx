@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { tripService } from '../../services/tripService'; // Make sure listTrips is available here
+import { Link } from 'react-router-dom';
+import { tripService } from '../../services/tripService';
 import { Trip } from '../../models/trip';
+import './TripList.css'; // Create this CSS file for styling
 
 export const TripList = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -11,7 +13,7 @@ export const TripList = () => {
     const fetchTrips = async () => {
       try {
         // Fetch trips from API (use getAllTrips or listTrips based on your service definition)
-        const data = await tripService.getAllTrips(); // Make sure you're using the correct method here
+        const data = await tripService.getAllTrips();
         setTrips(data);
         setError(null); // Clear any previous errors
       } catch (error) {
@@ -25,26 +27,32 @@ export const TripList = () => {
     fetchTrips();
   }, []); // Empty dependency array to run only once on mount
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading trips...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
-      <h2>Available Trips</h2>
+    <div className="trips-container">
+      <h2 className="page-title">Available Trips</h2>
       {trips.length === 0 ? (
-        <p>No trips available.</p>
+        <p className="no-trips">No trips available at the moment.</p>
       ) : (
-        <ul>
+        <div className="trip-grid">
           {trips.map((trip) => (
-            <li key={trip.id}>
+            <div key={trip.id} className="trip-card">
               <h3>{trip.title}</h3>
-              <p>{trip.description}</p>
-              <p>
-                From {trip.start_date} to {trip.end_date}
+              <p className="trip-description">{trip.description}</p>
+              <p className="trip-dates">
+                From: {new Date(trip.start_date).toLocaleDateString()} 
+                <br />
+                To: {new Date(trip.end_date).toLocaleDateString()}
               </p>
-            </li>
+              <div className="trip-actions">
+                <Link to={`/book-trip/${trip.id}`} className="book-btn">Book This Trip</Link>
+                <Link to={`/review-trip/${trip.id}`} className="review-btn">Write a Review</Link>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

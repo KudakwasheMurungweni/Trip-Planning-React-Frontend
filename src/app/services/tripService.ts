@@ -1,44 +1,34 @@
-import api from './api';
-import { handleServiceError } from './api'; // Make sure to import handleServiceError
+import api, { handleServiceError } from './api';
 import type { Trip, TripCreate } from '../models/trip';
 
-// Service to interact with trips API
 export const tripService = {
-  // Fetch all trips
   getAllTrips: async (): Promise<Trip[]> => {
     try {
-      const response = await api.get('/api/trips/');
+      const response = await api.get<Trip[]>('/trips/');
       return response.data;
     } catch (error) {
-      handleServiceError(error, 'Failed to fetch trips');
-      throw error;  // Ensure the error is thrown for further handling in the hook
+      handleServiceError(error);
+      throw error;  // Throwing the error after logging it so it can be caught in the calling component
     }
   },
-
-  // Method to fetch a single trip by ID
-  getTripDetails: async (id: number): Promise<Trip> => {
+  
+  getTripById: async (tripId: number): Promise<Trip> => {
     try {
-      const response = await api.get(`/api/trips/${id}/`);
+      const response = await api.get<Trip>(`/trips/${tripId}/`);
       return response.data;
     } catch (error) {
-      handleServiceError(error, 'Failed to fetch trip details');
-      throw error;  // Ensure the error is thrown for further handling
+      handleServiceError(error);
+      throw error;
     }
   },
 
-  // Method to create a new trip
   createTrip: async (tripData: TripCreate): Promise<Trip> => {
     try {
-      const response = await api.post('/api/trips/', tripData);
-      return response.data;
+      const response = await api.post<Trip>('/trips/', tripData);
+      return response.data;  // Corrected the case from 'response. Data' to 'response.data'
     } catch (error) {
-      handleServiceError(error, 'Failed to create trip');
-      throw error;  // Ensure the error is thrown for further handling
+      handleServiceError(error);
+      throw error;
     }
-  },
-
-  // Alias for getAllTrips, used in TripList
-  listTrips: async (): Promise<Trip[]> => {
-    return tripService.getAllTrips(); // Reuse getAllTrips for listTrips
   }
 };
