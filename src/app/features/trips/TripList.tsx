@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { tripService } from '../../services/tripService';
 import { Trip } from '../../models/trip';
-import './TripList.css'; // Create this CSS file for styling
+import './TripList.css';
 
 export const TripList = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -12,12 +12,10 @@ export const TripList = () => {
   useEffect(() => {
     const fetchTrips = async () => {
       try {
-        // Fetch trips from API (use getAllTrips or listTrips based on your service definition)
         const data = await tripService.getAllTrips();
         setTrips(data);
-        setError(null); // Clear any previous errors
+        setError(null);
       } catch (error) {
-        // Set the error message if fetch fails
         setError(error instanceof Error ? error.message : 'Failed to load trips');
       } finally {
         setLoading(false);
@@ -25,7 +23,7 @@ export const TripList = () => {
     };
 
     fetchTrips();
-  }, []); // Empty dependency array to run only once on mount
+  }, []);
 
   if (loading) return <p>Loading trips...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -39,6 +37,11 @@ export const TripList = () => {
         <div className="trip-grid">
           {trips.map((trip) => (
             <div key={trip.id} className="trip-card">
+              {trip.image && (
+                <div className="trip-image-container">
+                  <img src={trip.image} alt={trip.title} className="trip-image" />
+                </div>
+              )}
               <h3>{trip.title}</h3>
               <p className="trip-description">{trip.description}</p>
               <p className="trip-dates">
