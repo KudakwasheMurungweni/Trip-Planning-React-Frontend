@@ -1,27 +1,51 @@
+// destinationService.ts
 import api from './api';
-import { Destination } from '../models/destination'; // Ensure Destination is correctly imported from the correct file
-import { handleServiceError } from '../utils/serviceHelpers'; // Import the error handling function
+import { Destination } from '../models';
+import { handleServiceError } from '../utils/serviceHelpers';
+import axios from 'axios';
+
+const DJANGO_BASE_URL = 'http://localhost:8000'; // Hardcoded Django URL
+
+const formatImageUrl = (imagePath: string) => {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http')) return imagePath;
+  return `${DJANGO_BASE_URL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+};
 
 export const destinationService = {
   getAllDestinations: async (): Promise<Destination[]> => {
     try {
+      console.log('[API] Fetching destinations from:', `${DJANGO_BASE_URL}/api/destinations/`);
+      
       const response = await api.get('/api/destinations/');
-      if (response.status !== 200) throw new Error('Failed to fetch destinations');
-      return response.data;
-    } catch (error) {
-      handleServiceError(error, 'Failed to fetch destinations');
-      return []; // Return an empty array in case of error, to prevent crashing the app
-    }
-  },
+      console.log('[API] Received response:', response);
 
-  getDestinationDetails: async (id: number): Promise<Destination> => {
-    try {
-      const response = await api.get(`/api/destinations/${id}/`);
-      if (response.status !== 200) throw new Error('Failed to fetch destination details');
-      return response.data;
+      if (!Array.isArray(response.data)) {
+        throw new Error('Invalid response format: Expected array');
+      }
+
+      return response.data.map(d => ({
+        id: d.id,
+        name: d.name || 'Unknown',
+        description: d.description || '',
+        location: d.location || 'Unknown',
+        attractions: d.attractions?.split(',')?.map((a: string) => a.trim()) || [],
+        activities: d.activities?.split(',')?.map((a: string) => a.trim()) || [],
+        image: d.image ? formatImageUrl(d.image) : undefined  
+      }));
+      
     } catch (error) {
-      handleServiceError(error, 'Failed to fetch destination details');
-      throw error; // Re-throw the error after logging it
+      console.error('[API] Failed to fetch destinations:', {
+        error,
+        config: axios.isAxiosError(error) ? error.config : undefined,
+        response: axios.isAxiosError(error) ? error.response?.data : undefined
+      });
+      
+      handleServiceError(
+        error instanceof Error ? error : new Error('Failed to load destinations'),
+        'Destination service error'
+      );
+      return [];
     }
   }
 };
