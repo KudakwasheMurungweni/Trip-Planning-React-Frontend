@@ -4,7 +4,7 @@ import type { Trip, TripCreate } from '../models/trip';
 export const tripService = {
   getAllTrips: async (): Promise<Trip[]> => {
     try {
-      const response = await api.get<Trip[]>('/trips/');
+      const response = await api.get<Trip[]>('api/trips/');
       return response.data;
     } catch (error) {
       handleServiceError(error);
@@ -14,7 +14,7 @@ export const tripService = {
   
   getTripById: async (tripId: number): Promise<Trip> => {
     try {
-      const response = await api.get<Trip>(`/trips/${tripId}/`);
+      const response = await api.get<Trip>(`api/trips/${tripId}/`);
       return response.data;
     } catch (error) {
       handleServiceError(error);
@@ -24,7 +24,7 @@ export const tripService = {
 
   createTrip: async (tripData: TripCreate): Promise<Trip> => {
     try {
-      const response = await api.post<Trip>('/trips/', tripData);
+      const response = await api.post<Trip>('api/trips/', tripData);
       return response.data;  // Corrected the case from 'response. Data' to 'response.data'
     } catch (error) {
       handleServiceError(error);
