@@ -11,6 +11,7 @@ export interface Trip {
   destinations: Destination[];
   image?: string;
   activities?: string;
+  status?: 'available' | 'completed' | 'canceled';
 }
 
 export interface TripCreate {

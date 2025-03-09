@@ -1,7 +1,8 @@
 import api from './api';
 import { handleServiceError } from './api';
-import  { Booking, BookingCreate } from '../models/booking';
-import { Trip } from '../models/trip'
+import { Booking, BookingCreate } from '../models/booking';
+import { Trip } from '../models/trip';
+
 export const bookingService = {
   getUserBookings: async (): Promise<Booking[]> => {
     try {

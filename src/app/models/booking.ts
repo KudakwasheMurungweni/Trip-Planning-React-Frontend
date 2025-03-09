@@ -1,20 +1,20 @@
-import { Profile } from './profile';  // Ensure the correct path if needed
-import { Trip } from './trip';         // Correct import path for Trip model
+import { Trip } from './trip';
 
 export interface Booking {
   id: number;
-  user: Profile;
-  trip: Trip | number | null;  // Allow null as well
-  booking_type: string;
-  details: string;
+  trip: Trip;
+  booking_date: string;
+  status: string;
 }
-
 
 export interface BookingCreate {
-  userId: number;
-  tripId: number;
-  booking_type: string;
-  details: string;
+  trip: number; // Trip ID
+  booking_date?: string;
 }
 
-
+export interface DashboardBooking {
+  id: number;
+  trip_title: string;
+  booking_date: string;
+  status: string;
+}

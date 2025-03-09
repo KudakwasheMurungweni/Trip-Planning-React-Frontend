@@ -1,52 +1,61 @@
 import { useEffect, useState } from "react";
-import { tripService } from "../../services/tripService";
-
-// Define the types for the trip and onSelectTrip props
-interface Trip {
-  id: number;
-  title: string;
-}
+import { Trip } from "../../models/trip";
+import { bookingService } from "../../services/bookingService";
 
 interface TripSelectionFormProps {
-  onSelectTrip: (tripId: number) => void; // onSelectTrip now expects a number as the trip ID
+  onSelectTrip: (tripId: number) => void;
 }
 
 const TripSelectionForm = ({ onSelectTrip }: TripSelectionFormProps) => {
-  const [trips, setTrips] = useState<Trip[]>([]); // Use TypeScript type for trips
-  const [loading, setLoading] = useState<boolean>(true); // Track loading state
-  const [error, setError] = useState<string | null>(null); // Track error state
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTrips = async () => {
       try {
-        const tripsData = await tripService.getAllTrips(); // Fetch trips from the service
-        setTrips(tripsData);
-        setLoading(false); // Stop loading once trips are fetched
-      } catch (error) {
-        setError("Error fetching trips: " + error);
-        setLoading(false); // Stop loading in case of error
+        const data = await bookingService.getAvailableTrips();
+        setTrips(data);
+      } catch (err) {
+        setError("Failed to load trips");
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchTrips();
   }, []);
 
-  if (loading) {
-    return <p>Loading trips...</p>; // Show loading message while trips are being fetched
-  }
+  const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const tripId = Number(e.target.value);
+    if (tripId) onSelectTrip(tripId);
+  };
 
-  if (error) {
-    return <p>{error}</p>; // Show error message if there's an error
-  }
+  if (loading) return <div>Loading trips...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
-    <select onChange={(e) => onSelectTrip(Number(e.target.value))}>
-      <option value="">Select a Trip</option>
-      {trips.map((trip) => (
-        <option key={trip.id} value={trip.id}>
-          {trip.title}
-        </option>
-      ))}
-    </select>
+    <div className="trip-selector">
+      <label htmlFor="trip-select">Choose a trip:</label>
+      <select 
+        id="trip-select"
+        onChange={handleSelection}
+        defaultValue=""
+        className="trip-dropdown"
+      >
+        <option value="" disabled>Select a Trip</option>
+        {trips.map((trip) => (
+          <option 
+            key={trip.id} 
+            value={trip.id}
+            className="trip-option"
+          >
+            {trip.title} ({new Date(trip.start_date).toLocaleDateString()})
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
 
