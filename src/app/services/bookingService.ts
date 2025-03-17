@@ -6,7 +6,7 @@ import { Trip } from '../models/trip';
 export const bookingService = {
   getUserBookings: async (): Promise<Booking[]> => {
     try {
-      const response = await api.get('/bookings');
+      const response = await api.get('/bookings/');
       return response.data;
     } catch (err) {
       handleServiceError(err);
@@ -36,7 +36,7 @@ export const bookingService = {
 
   createBooking: async (bookingData: BookingCreate): Promise<Booking> => {
     try {
-      const response = await api.post('/bookings', bookingData);
+      const response = await api.post('/bookings/', bookingData);
       return response.data;
     } catch (err) {
       handleServiceError(err);
