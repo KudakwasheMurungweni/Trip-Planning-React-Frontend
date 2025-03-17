@@ -33,16 +33,16 @@ export const TripList = () => {
     fetchTrips();
   }, []);
 
-  if (loading) return <p>Loading trips...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="status-message">Loading trips...</p>;
+  if (error) return <p className="status-message">Error: {error}</p>;
 
   return (
     <div>
       <h2>Available Trips</h2>
       {trips.length === 0 ? (
-        <p>No trips available at the moment.</p>
+        <p className="status-message">No trips available at the moment.</p>
       ) : (
-        <div>
+        <div className="trip-container">
           {trips.map((trip) => (
             <div key={trip.id} className="trip-card">
               {trip.image && <img src={trip.image} alt={trip.title} />}
@@ -51,9 +51,10 @@ export const TripList = () => {
               <p>
                 From: {new Date(trip.start_date).toLocaleDateString()} - To: {new Date(trip.end_date).toLocaleDateString()}
               </p>
-              {/* Updated the links to ensure dynamic routing */}
-              <Link to={`/bookings/${trip.id}`}>Book This Trip</Link>
-              <Link to={`/reviews/${trip.id}`}>Write a Review</Link>
+              <div className="button-group">
+                <Link to={`/bookings/${trip.id}`} className="book-now">Book This Trip</Link>
+                <Link to={`/reviews/${trip.id}`}>Write a Review</Link>
+              </div>
             </div>
           ))}
         </div>

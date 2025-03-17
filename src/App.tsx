@@ -23,6 +23,14 @@ function ReviewSubmissionWrapper() {
   return <ReviewSubmission tripId={tripId} />;
 }
 
+// Helper component to extract tripId from URL params for BookingForm
+function BookingFormWrapper() {
+  const params = useParams();
+  const tripId = params.tripId ? parseInt(params.tripId, 10) : undefined;
+  
+  return <BookingForm tripId={tripId} />;
+}
+
 function App() {
   // Mock empty bookings array with the correct type
   const bookings: DashboardBooking[] = [];
@@ -62,14 +70,22 @@ function App() {
               path="/bookings/new" 
               element={
                 <ProtectedRoute>
-                  <BookingForm />
+                  <BookingFormWrapper />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/bookings/:tripId" 
+              element={
+                <ProtectedRoute>
+                  <BookingFormWrapper />
                 </ProtectedRoute>
               } 
             />
 
             {/* Reviews routes */}
             <Route 
-              path="/reviews/new/:tripId" 
+              path="/reviews/:tripId" 
               element={
                 <ProtectedRoute>
                   <ReviewSubmissionWrapper />
